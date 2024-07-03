@@ -1,21 +1,39 @@
-import React from 'react'
-
-const initialFormState = { // suggested
-  fullName: '',
-  size: '',
-  '1': false,
-  '2': false,
-  '3': false,
-  '4': false,
-  '5': false,
-}
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateField, postOrder, resetForm } from '../state/store';
 
 export default function PizzaForm() {
+  const dispatch = useDispatch();
+  const { fullName, size, toppings, pending } = useSelector((state) => state.pizza);
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    dispatch(updateField({ name, value, type, checked }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const order = {
+      fullName: fullName,
+      size: size,
+      toppings: toppings,
+    };
+
+    try {
+      await dispatch(postOrder(order));
+      console.log('Order successfully submitted');
+      // Reset form state to initial values
+    dispatch(resetForm());
+    } catch (error) {
+      console.error('Error submitting order:', error.message);
+    }
+  };
+
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
       <h2>Pizza Form</h2>
-      {true && <div className='pending'>Order in progress...</div>}
-      {true && <div className='failure'>Order failed: fullName is required</div>}
+      {pending && <div className='pending'>Order in progress...</div>}
 
       <div className="input-group">
         <div>
@@ -26,6 +44,8 @@ export default function PizzaForm() {
             name="fullName"
             placeholder="Type full name"
             type="text"
+            value={fullName}
+            onChange={handleChange}
           />
         </div>
       </div>
@@ -33,7 +53,13 @@ export default function PizzaForm() {
       <div className="input-group">
         <div>
           <label htmlFor="size">Size</label><br />
-          <select data-testid="sizeSelect" id="size" name="size">
+          <select
+            data-testid="sizeSelect"
+            id="size"
+            name="size"
+            value={size}
+            onChange={handleChange}
+          >
             <option value="">----Choose size----</option>
             <option value="S">Small</option>
             <option value="M">Medium</option>
@@ -44,22 +70,62 @@ export default function PizzaForm() {
 
       <div className="input-group">
         <label>
-          <input data-testid="checkPepperoni" name="1" type="checkbox" />
-          Pepperoni<br /></label>
+          <input
+            data-testid="checkPepperoni"
+            name="toppings"
+            value="1"
+            type="checkbox"
+            checked={toppings.includes('1')}
+            onChange={handleChange}
+          />
+          Pepperoni<br />
+        </label>
         <label>
-          <input data-testid="checkGreenpeppers" name="2" type="checkbox" />
-          Green Peppers<br /></label>
+          <input
+            data-testid="checkGreenpeppers"
+            name="toppings"
+            value="2"
+            type="checkbox"
+            checked={toppings.includes('2')}
+            onChange={handleChange}
+          />
+          Green Peppers<br />
+        </label>
         <label>
-          <input data-testid="checkPineapple" name="3" type="checkbox" />
-          Pineapple<br /></label>
+          <input
+            data-testid="checkPineapple"
+            name="toppings"
+            value="3"
+            type="checkbox"
+            checked={toppings.includes('3')}
+            onChange={handleChange}
+          />
+          Pineapple<br />
+        </label>
         <label>
-          <input data-testid="checkMushrooms" name="4" type="checkbox" />
-          Mushrooms<br /></label>
+          <input
+            data-testid="checkMushrooms"
+            name="toppings"
+            value="4"
+            type="checkbox"
+            checked={toppings.includes('4')}
+            onChange={handleChange}
+          />
+          Mushrooms<br />
+        </label>
         <label>
-          <input data-testid="checkHam" name="5" type="checkbox" />
-          Ham<br /></label>
+          <input
+            data-testid="checkHam"
+            name="toppings"
+            value="5"
+            type="checkbox"
+            checked={toppings.includes('5')}
+            onChange={handleChange}
+          />
+          Ham<br />
+        </label>
       </div>
       <input data-testid="submit" type="submit" />
     </form>
-  )
+  );
 }
