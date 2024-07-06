@@ -1,18 +1,41 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateField, postOrder, resetForm } from '../state/store';
+import { updateField, postOrder, resetForm, fetchData } from '../state/store';
 
 export default function PizzaForm() {
   const dispatch = useDispatch();
   const { fullName, size, toppings, pending } = useSelector((state) => state.pizza);
+  const [errors, setErrors] = useState({ fullName: '', size: '' });
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     dispatch(updateField({ name, value, type, checked }));
   };
 
+  const validateForm = () => {
+    let formErrors = { fullName: '', size: '' };
+    let isValid = true;
+
+    if (!fullName.trim()) {
+      formErrors.fullName = 'fullName is required';
+      isValid = false;
+    }
+
+    if (!size) {
+      formErrors.size = 'Size must be one of the following values : S, M, L';
+      isValid = false;
+    }
+
+    setErrors(formErrors);
+    return isValid;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
 
     const order = {
       fullName: fullName,
@@ -23,8 +46,8 @@ export default function PizzaForm() {
     try {
       await dispatch(postOrder(order));
       console.log('Order successfully submitted');
-      // Reset form state to initial values
-    dispatch(resetForm());
+      dispatch(resetForm());
+      dispatch(fetchData()); // Fetch the updated order list
     } catch (error) {
       console.error('Error submitting order:', error.message);
     }
@@ -47,6 +70,7 @@ export default function PizzaForm() {
             value={fullName}
             onChange={handleChange}
           />
+          {errors.fullName && <div className="error">{errors.fullName}</div>}
         </div>
       </div>
 
@@ -65,6 +89,7 @@ export default function PizzaForm() {
             <option value="M">Medium</option>
             <option value="L">Large</option>
           </select>
+          {errors.size && <div className="error">{errors.size}</div>}
         </div>
       </div>
 

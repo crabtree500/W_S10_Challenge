@@ -6,6 +6,7 @@ const OrderList = () => {
   const dispatch = useDispatch();
   const { loading, data, error } = useSelector((state) => state.getInformation);
   const [selectedSize, setSelectedSize] = useState('All'); 
+
   useEffect(() => {
     dispatch(fetchData());
   }, [dispatch]);
@@ -23,13 +24,16 @@ const OrderList = () => {
     <div id="orderList">
       <h2>Pizza Orders</h2>
       <ol>
-        {filteredOrders.map((order) => (
-          <li key={order.id}>
-        <div>
-              {order.customer} ordered a size {order.size} with {order.toppings.length === 0 ? 'no toppings' : `${order.toppings.length} ${order.toppings.length === 1 ? 'topping' : 'toppings'}`}
-            </div>
-          </li>
-        ))}
+        {filteredOrders.map((order) => {
+          const toppingsCount = order.toppings ? order.toppings.length : 0;
+          return (
+            <li key={order.id}>
+              <div>
+                {order.customer} ordered a size {order.size} with {toppingsCount === 0 ? 'no toppings' : `${toppingsCount} ${toppingsCount === 1 ? 'topping' : 'toppings'}`}
+              </div>
+            </li>
+          );
+        })}
       </ol>
       <div id="sizeFilters">
         Filter by size:
@@ -52,4 +56,5 @@ const OrderList = () => {
 };
 
 export default OrderList;
+
 
