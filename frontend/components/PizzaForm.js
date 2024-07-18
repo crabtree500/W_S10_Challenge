@@ -4,7 +4,7 @@ import { updateField, postOrder, resetForm, fetchData } from '../state/store';
 
 export default function PizzaForm() {
   const dispatch = useDispatch();
-  const { fullName, size, toppings, pending } = useSelector((state) => state.pizza);
+  const { fullName, size, toppings, loading } = useSelector((state) => state.pizza);
   const [errors, setErrors] = useState({ fullName: '', size: '' });
 
   const handleChange = (e) => {
@@ -56,7 +56,7 @@ export default function PizzaForm() {
   return (
     <form onSubmit={handleSubmit}>
       <h2>Pizza Form</h2>
-      {pending && <div className='pending'>Order in progress...</div>}
+      {loading && <div className='pending'>Order in progress...</div>}
 
       <div className="input-group">
         <div>

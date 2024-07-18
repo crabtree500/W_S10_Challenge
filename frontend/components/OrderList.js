@@ -11,9 +11,6 @@ const OrderList = () => {
     dispatch(fetchData());
   }, [dispatch]);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
-
   const filteredOrders = selectedSize === 'All' ? data : data.filter(order => order.size === selectedSize);
 
   const handleFilter = (size) => {
